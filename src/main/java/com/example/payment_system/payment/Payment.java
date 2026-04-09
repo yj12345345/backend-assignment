@@ -1,33 +1,40 @@
 package com.example.payment_system.payment;
 
+import com.example.payment_system.discount.DiscountResult;
 import com.example.payment_system.order.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Payment {
 
     @Id @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    private Order order;
+    private int finalPrice;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private int finalPrice;
+    private LocalDateTime paymentDate;
 
-    private LocalDateTime paymentDate = LocalDateTime.now();
+    @ManyToOne
+    private Order order;
 
-    protected Payment() {}
+    @ElementCollection
+    private List<DiscountResult> discountResults;
 
-    public Payment(Order order, PaymentMethod paymentMethod, int finalPrice) {
+    public Payment(Order order, int finalPrice, PaymentMethod method, List<DiscountResult> discountResults) {
         this.order = order;
-        this.paymentMethod = paymentMethod;
         this.finalPrice = finalPrice;
+        this.paymentMethod = method;
+        this.discountResults = discountResults;
+        this.paymentDate = LocalDateTime.now();
     }
 }

@@ -46,4 +46,28 @@ class PaymentServiceTest {
 
         assertThat(payment.getFinalPrice()).isEqualTo(10000); // 할인 없음
     }
+
+    @Test
+    void vvip_point_discount_test() {
+
+        Member member = new Member(1L, MemberGrade.VVIP);
+        Order order = new Order(1L, member, "상품A", 10000);
+
+        Payment payment = paymentService.pay(order, PaymentMethod.POINT);
+
+        // VVIP 10% → 9000
+        // POINT 5% → 8550
+        assertThat(payment.getFinalPrice()).isEqualTo(8550);
+    }
+
+    @Test
+    void discount_history_test() {
+
+        Member member = new Member(1L, MemberGrade.VIP);
+        Order order = new Order(1L, member, "상품A", 10000);
+
+        Payment payment = paymentService.pay(order, PaymentMethod.POINT);
+
+        assertThat(payment.getDiscountResults().size()).isEqualTo(2);
+    }
 }
